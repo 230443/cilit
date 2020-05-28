@@ -3,7 +3,7 @@
 
 ##### Constants
 
-filename=
+filename=$1
 
 ##### Functions
 
@@ -24,8 +24,10 @@ version()
 
 does_exist()
 {
-	if ! [ -e $1 ] 
-	then 
+	if  [ -e "$filename" ] 
+	then
+		echo "file accepted"
+	else	
 		echo "File does not exist"
 		exit 1	
 	fi
@@ -34,25 +36,25 @@ does_exist()
 
 ##### Main
 
-
+if [ $1 != "" ] 
+then	
 case $1 in
-        -h | --help )           usage
+        -h | --help )		usage
                                 exit
                                 ;;
-        -v | --help )           version
+        -v | --version )	version
                                 exit
                                 ;;
         * )                     does_exist
-                                break
     esac
+fi
 
 
 # if trashbin exist
-if ! [ -d ~/trashbin ]; then
+if  [ ! -d ~/trashbin ]; then
 	# creating trashbin
 	mkdir ~/trashbin
+	echo "creating trashbin"
+else
+	echo "trashbin exists"
 fi
-       
-
-
-
