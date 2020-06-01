@@ -34,6 +34,23 @@ does_exist()
 }
 
 
+mvfile ()
+{	#mvfile line trashbin.cfg_path
+case $1 in
+	/*) 	local absolute=$1;;
+	*)	local absolute=${2%/*}/$1;;
+esac
+
+if [ -f $absolute ];
+then
+	mkdir -p  ~/trashbin${absolute%/*}	#create line of folders
+	mv $absolute ~/trashbin${absolute%/*}
+elif [ -d $absolute ]
+then
+	find $absolute -maxdepth 1 -type f -name trashbin.cfg
+fi
+}
+
 ##### Main
 
 if [ $1 != "" ] 
@@ -53,27 +70,20 @@ else
 	exit 1
 fi
 
-
 # if trashbin exist
 if  [ ! -d ~/trashbin ]; then
 	# creating trashbin
 	mkdir ~/trashbin
 	echo "creating trashbin"
 fi
-mvfile ()
-{
-case $1 in
-	/*) 	local absolute=$1;;
-	*)	local absolute=$PWD/$1;;
+
+case $filename in
+	/*) 	absolute=$filename;;
+	*)	absolute=$PWD/$filename;;
 esac
 
-if [ -f $1 ];
+if [ -f $absolute ] then;
+	mvfile $absolute
+if [ -d $absolute ]
 then
-	mkdir -p  ~/trashbin${absolute%/*}	#create line of folders
-	mv $absolute ~/trashbin${absolute%/*}
-fi
-}
-
-if [ -d $filename ]
-then
-	find $filename -type f -name trashbin.cfg
+	find $absolute -type f -name trashbin.cfg
