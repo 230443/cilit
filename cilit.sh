@@ -3,7 +3,6 @@
 
 ##### Constants
 
-filename=$1
 
 ##### Functions
 
@@ -24,9 +23,10 @@ version()
 
 does_exist()
 {
-	if  [ -e "$filename" ] 
+	if  [ -e "$1" ] 
 	then
-		echo "file accepted"
+		filename=$1
+
 	else	
 		echo "File does not exist"
 		exit 1	
@@ -45,8 +45,12 @@ case $1 in
         -v | --version )	version
                                 exit
                                 ;;
-        * )                     does_exist
+        * )                     does_exist $1
     esac
+else
+	echo "No argument"
+	usage
+	exit 1
 fi
 
 
@@ -55,6 +59,21 @@ if  [ ! -d ~/trashbin ]; then
 	# creating trashbin
 	mkdir ~/trashbin
 	echo "creating trashbin"
-else
-	echo "trashbin exists"
 fi
+mvfile ()
+{
+case $1 in
+	/*) 	local absolute=$1;;
+	*)	local absolute=$PWD/$1;;
+esac
+
+if [ -f $1 ];
+then
+	mkdir -p  ~/trashbin${absolute%/*}	#create line of folders
+	mv $absolute ~/trashbin${absolute%/*}
+fi
+}
+
+if [ -d $filename ]
+then
+	find $filename -type f -name trashbin.cfg
