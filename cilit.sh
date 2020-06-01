@@ -36,31 +36,21 @@ does_exist()
 
 mvfile ()
 {	#mvfile line trashbin.cfg_path
-#	local var2=$2
-case $1 in
-	/*) 	local absolute=$1;;
-	*)	local absolute=${2%/*}/$1;;
-esac
+	case $1 in
+		/*) 	local absolute=$1;;
+		*)	local absolute=${2%/*}/$1;;
+	esac
 
-if [ -f $absolute ];
-then
-	mkdir -p  ~/trashbin${absolute%/*}	#create line of folders
-	mv $absolute ~/trashbin${absolute%/*}
-#elif [ -d $absolute ]
-#then
-#	for f in $(find $absolute -maxdepth 1 -type f -name trashbin.cfg)
-#	do
-#		for line in ($f) 
-#			do
-#				mvfile ${line} $f
-#			done
-#	done
-fi
+	if [ -f $absolute ];
+	then
+		mkdir -p ~/trashbin${absolute%/*}	#create line of folders
+		mv $absolute ~/trashbin${absolute%/*}
+	fi
 }
 
 ##### Main
 
-if [ -z "$1" ] 
+if [ -n "$1" ] 
 then	
 case $1 in
         -h | --help )		usage
@@ -92,15 +82,15 @@ case $filename in
 	*)	absolute=$PWD/$filename;;
 esac
 
-if [ -f $absolute ] then;
-	mvfile $absolute
-if [ -d $absolute ]
+if [ -f $absolute ]; then
+	mvfile $absolute $PWD;
+elif [ -d $absolute ]
 then
 	for f in $(find $absolute -type f -name trashbin.cfg)
 	do
-		for line in ($f) 
+		while read line 
 			do
 				mvfile ${line} $f
-			done
+			done < $f
 	done
-
+fi
