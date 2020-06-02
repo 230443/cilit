@@ -22,7 +22,6 @@ usage()
 version()
 {
 	echo "v1.0"
-
 }
 
 does_exist()
@@ -30,10 +29,6 @@ does_exist()
 	if  [ -e "$1" ] 
 	then
 		filename=$1
-
-	else	
-		echo "File does not exist"
-		exit 1	
 	fi
 }
 
@@ -42,13 +37,12 @@ mvfile ()
 {	#mvfile line trashbin.cfg_path
 	case $1 in
 		/*) 	local absolute=$1;;
-		*)	local absolute=${2%/*}/$1;;
+		*)	local absolute=$PWD/$1;;
 	esac
-
 
 	if [ -f $absolute ]; then
 		if [[ $absolute =~ .*trashbin.cfg ]]; then
-			echo "$absolute" >> $temp
+			echo $absolute >> $temp
 		else	
 			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
 			mv $absolute ~/trashbin${absolute%/*}
@@ -80,35 +74,44 @@ fi
 if  [ ! -d ~/trashbin ]; then
 	# creating trashbin
 	mkdir ~/trashbin
-	echo "creating trashbin"
 fi
 
 # mvfile $filename $PWD
-
-case $filename in
-	/*) 	absolute=$filename;;
-	*)	absolute=$PWD/$filename;;
-esac
-
-if [ -f "$absolute" ]; then	
-	mkdir -p ~/trashbin${absolute%/*}	#create line of folders
-	mv $absolute ~/trashbin${absolute%/*}	
-elif [ -d "$absolute" ]
-then
-	temp=$(mktemp)
-	for f in $(find $absolute -type f -name trashbin.cfg)
-	do
-		while read line 
+temp=$(mktemp)
+if [ ! -L $filename ]; then
+for absolute in $(readlink -e $filename) #expand ../ ./
+do
+	if [ -f "$absolute" ]; then	
+		mkdir -p ~/trashbin${absolute%/*}	#create line of folders
+		mv $absolute ~/trashbin${absolute%/*}	
+	elif [ -d "$absolute" ]
+	then
+		for f in $(find $absolute -type f -name trashbin.cfg)
+		do
+			cd ${f%/*} #change directory lvl above trashbin.cfg
+			while read line 
 			do
-				mvfile ${line} $f
+				for file in $(echo $line) #expand regular exp
+					do 
+						mvfile $file
+					done
 			done < $f
-	done
+		done
+	fi
+done
+else
+	
+	case $1 in
+		/*) 	absolute=$1;;
+		*)	absolute=$PWD/$1;;
+	esac
+			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
+			mv $absolute ~/trashbin${absolute%/*}
 fi
 
-while read line 
-	do
-		mkdir -p ~/trashbin${line%/*}	#create line of folders
-		mv $line ~/trashbin${line%/*}	
-	done < $temp
-
+	while read line 
+		do
+			mkdir -p ~/trashbin${line%/*}	#create line of folders
+			mv $line ~/trashbin${line%/*}	
+		done < $temp
 rm $temp
