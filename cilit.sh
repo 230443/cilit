@@ -1,8 +1,4 @@
-#!/bin/bash -x
-# -x = tracing
-
-##### Constants
-
+#!/bin/bash 
 
 ##### Functions
 
@@ -72,22 +68,31 @@ else
 	exit 1
 fi
 
+if [ -z $filename ]; then
+	echo File does not exist
+	exit 1
+fi
 # if trashbin exist
 if  [ ! -d ~/trashbin ]; then
 	# creating trashbin
 	mkdir ~/trashbin
 fi
 
-# mvfile $filename $PWD
+wdir=$PWD
+
 temp=$(mktemp)
-if [ ! -L $filename ]; then
-for absolute in $(readlink -e $filename) #expand ../ ./
+
+for absolute in $(echo $filename) #expand
 do
-	if [ -f "$absolute" ]; then	
+	case $filename in
+		/*) 	absolute=$filename;;
+		*)	absolute=$PWD/$filename;;
+	esac
+
+	if [ ! -d "$absolute" ]; then	
 		mkdir -p ~/trashbin${absolute%/*}	#create line of folders
 		mv $absolute ~/trashbin${absolute%/*}	
-	elif [ -d "$absolute" ]
-	then
+	else
 		for f in $(find $absolute -type f -name trashbin.cfg)
 		do
 			cd ${f%/*} #change directory lvl above trashbin.cfg
@@ -101,15 +106,6 @@ do
 		done
 	fi
 done
-else
-	
-	case $1 in
-		/*) 	absolute=$1;;
-		*)	absolute=$PWD/$1;;
-	esac
-			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
-			mv $absolute ~/trashbin${absolute%/*}
-fi
 
 	while read line 
 		do
@@ -117,3 +113,4 @@ fi
 			mv $line ~/trashbin${line%/*}	
 		done < $temp
 rm $temp
+cd $wdir
