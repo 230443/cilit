@@ -47,8 +47,8 @@ mvfile ()
 
 
 	if [ -f "$absolute" ]; then
-		if [ "$absolute" == "*trashbin.cfg" ]; then
-			"$absolute" >> $temp
+		if [[ "$absolute" =~ *trashbin.cfg ]]; then
+			echo $absolute >> $temp
 		else	
 			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
 			mv "$absolute" ~/trashbin${absolute%/*}
