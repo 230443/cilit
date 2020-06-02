@@ -46,12 +46,12 @@ mvfile ()
 	esac
 
 
-	if [ -f $absolute ]; then
-		if [ $absolute =~ *trashbin.cfg ]; then
-			$absolute >> $temp
+	if [ -f "$absolute" ]; then
+		if [ "$absolute" == "*trashbin.cfg" ]; then
+			"$absolute" >> $temp
 		else	
 			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
-			mv $absolute ~/trashbin${absolute%/*}
+			mv "$absolute" ~/trashbin${absolute%/*}
 		fi
 	fi
 }
@@ -90,10 +90,10 @@ case $filename in
 	*)	absolute=$PWD/$filename;;
 esac
 
-if [ -f $absolute ]; then	
+if [ -f "$absolute" ]; then	
 	mkdir -p ~/trashbin${absolute%/*}	#create line of folders
 	mv $absolute ~/trashbin${absolute%/*}	
-elif [ -d $absolute ]
+elif [ -d "$absolute" ]
 then
 	temp=$(mktemp)
 	for f in $(find $absolute -type f -name trashbin.cfg)
