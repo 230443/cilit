@@ -8,11 +8,15 @@
 
 usage()
 {
-	echo 	"usage: cilit [[-v] | [-h] | file]
-		-h	help
-		-v	version
-		file	file or directory to be deleted"
-	#further describtion
+	echo 	" cilit - moves given files to trashbin
+		
+		usage: cilit [[-v] | [-h] | file]
+
+		-h	display this help and exits
+		-v	outputs version information
+		file	file or directory to be deleted
+
+		written by Daniel Baraniak and Tomasz Kolas"
 }
 
 version()
