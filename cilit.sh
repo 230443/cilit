@@ -46,12 +46,12 @@ mvfile ()
 	esac
 
 
-	if [ -f "$absolute" ]; then
-		if [[ "$absolute" =~ *trashbin.cfg ]]; then
-			echo $absolute >> $temp
+	if [ -f $absolute ]; then
+		if [[ $absolute =~ .*trashbin.cfg ]]; then
+			echo "$absolute" >> $temp
 		else	
 			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
-			mv "$absolute" ~/trashbin${absolute%/*}
+			mv $absolute ~/trashbin${absolute%/*}
 		fi
 	fi
 }
