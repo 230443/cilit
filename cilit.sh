@@ -45,10 +45,14 @@ mvfile ()
 		*)	local absolute=${2%/*}/$1;;
 	esac
 
-	if [ -f $absolute ];
-	then
-		mkdir -p ~/trashbin${absolute%/*}	#create line of folders
-		mv $absolute ~/trashbin${absolute%/*}
+
+	if [ -f $absolute ]; then
+		if [ $absolute =~ *trashbin.cfg ]; then
+			$absolute >> $temp
+		else	
+			mkdir -p ~/trashbin${absolute%/*}	#create line of folders
+			mv $absolute ~/trashbin${absolute%/*}
+		fi
 	fi
 }
 
@@ -86,10 +90,12 @@ case $filename in
 	*)	absolute=$PWD/$filename;;
 esac
 
-if [ -f $absolute ]; then
-	mvfile $absolute $PWD;
+if [ -f $absolute ]; then	
+	mkdir -p ~/trashbin${absolute%/*}	#create line of folders
+	mv $absolute ~/trashbin${absolute%/*}	
 elif [ -d $absolute ]
 then
+	temp=$(mktemp)
 	for f in $(find $absolute -type f -name trashbin.cfg)
 	do
 		while read line 
@@ -98,3 +104,11 @@ then
 			done < $f
 	done
 fi
+
+while read line 
+	do
+		mkdir -p ~/trashbin${line%/*}	#create line of folders
+		mv $line ~/trashbin${line%/*}	
+	done < $temp
+
+rm $temp
