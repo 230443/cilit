@@ -54,16 +54,18 @@ mvfile ()
 
 if [ -n "$1" ] 
 then	
-case $1 in
-        -h | --help )		usage
-                                exit
-                                ;;
-        -v | --version )	version
-                                exit
-                                ;;
-        * )                     does_exist $1
-    esac
-    shift
+while [ -n "$1" ]; do
+	case $1 in
+		-h | --help )		usage
+					exit
+					;;
+		-v | --version )	version
+					exit
+					;;
+		* )                     does_exist $1
+	esac
+    	shift
+    done
 else
 	echo "No argument"
 	usage
